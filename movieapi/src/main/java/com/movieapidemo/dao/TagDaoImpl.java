@@ -8,6 +8,7 @@ import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import com.movieapidemo.entity.Movie;
 import com.movieapidemo.entity.Tag;
 
 @Repository
@@ -41,10 +42,16 @@ public class TagDaoImpl implements TagDao {
 	}
 
 	@Override
-	public void saveTag(Tag tag) {
+	public Movie saveTag(Tag tag,int id) {
 		Session currentSession = sessionFactory.getCurrentSession();
 		
+		Movie movie = currentSession.get(Movie.class, id);
+		
+		movie.addTag(tag);
+		
 		currentSession.saveOrUpdate(tag);
+		
+		return movie;
 		
 	}
 

@@ -36,6 +36,12 @@ public class MovieDetailServiceImpl implements MovieDetailService{
 		
 		movieDetailDao.deleteMovieDetail(id);
 	}
+	
+	@Override
+	@Transactional
+	public void rateMovie(int id,int count) {
+		movieDetailDao.rateMovie(id, count);
+	}
 
 	
 	

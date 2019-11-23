@@ -17,13 +17,15 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.movieapidemo.entity.Movie;
 import com.movieapidemo.entity.MovieDetail;
+import com.movieapidemo.entity.MovieReview;
 import com.movieapidemo.entity.Tag;
-import com.movieapidemo.exceptions.MovieNotFoundException;
 import com.movieapidemo.service.MovieDetailService;
+import com.movieapidemo.service.MovieReviewService;
 import com.movieapidemo.service.MovieService;
+import com.movieapidemo.service.TagService;
 
 @RestController
-@RequestMapping("/discover")
+@RequestMapping("/movie")
 public class MovieRestController {
 	
 	
@@ -34,19 +36,24 @@ public class MovieRestController {
 	MovieDetailService movieDetailService;
 	
 	
-	@GetMapping("/movies")
-	public List<Movie> getMovies(){
-		
-		return movieService.getMovies();
-	}
+	@Autowired
+	TagService tagService;
 	
-	@PostMapping("/save_movie")
+	
+	@Autowired
+	MovieReviewService movieReviewService;
+	
+	/*
+	 * @GetMapping("/movies") public List<Movie> getMovies(){
+	 * 
+	 * return movieService.getMovies(); }
+	 */
+	
+	@PostMapping("/save")
 	public Movie saveMovie(@RequestBody Movie movie) {
-		
+
 		movie.setId(0);
-		
-		movie.getMovieDetail().setId(0);
-		
+
 		movieService.saveMovie(movie);
 		
 		return movie;
@@ -54,22 +61,24 @@ public class MovieRestController {
 	}
 	
 	
-	@GetMapping("/find_movie/{id}")
-	public Movie getMovie(@PathVariable int id) {
-		
-		if(id >= movieService.getMovies().size() || id< 0) {
-			throw new MovieNotFoundException("Movie not found exception:"+id);
-		}
-				
-		return 	movieService.getMovie(id);
-
-	}
+	/*
+	 * @GetMapping("/{movie_id}") public Movie getMovie(@PathVariable int movie_id)
+	 * {
+	 * 
+	 * if(movie_id >= movieService.getMovies().size() || movie_id< 0) { throw new
+	 * MovieNotFoundException("Movie not found exception:"+movie_id); }
+	 * 
+	 * return movieService.getMovie(movie_id);
+	 * 
+	 * }
+	 */
 	
 	
 	
-	@PutMapping("/update_movie")
+	@PutMapping("/update")
 	public Movie update(@RequestBody Movie movie) {
-
+		//TODO:change it to saveorUpdate
+		//TODO:check if there is no movie already will it update?
 		movieService.saveMovie(movie);
 		
 		return movie;
@@ -77,25 +86,82 @@ public class MovieRestController {
 	}
 	
 	
-	@DeleteMapping("/delete_movie/{id}")
-	public String delete(@PathVariable int id) {
+	@DeleteMapping("/delete/{movie_id}")
+	public String delete(@PathVariable int movie_id) {
 	
-		movieService.deleteMovie(id);
+		movieService.deleteMovie(movie_id);
 		
-		return ("Movie with" + id + "has been deleted");
+		return ("Movie with" + movie_id + "has been deleted");
 		
 	}
 	
-	@GetMapping("/get_movie_detail/{id}")
-	public MovieDetail getMovieDetail(@PathVariable int id) {
-		
-		return movieDetailService.getMovieDetail(id);
+	@GetMapping("/{movie_id}/keywords")																					
+	public List<Tag> getKeyWords(@PathVariable int movie_id) {
+		//TODO:check if it should be part of tag service
+		return movieService.getTags(movie_id);
 	}
 	
-	@GetMapping("/get_movies_by_keyword/{tagId}")
-	public List<Movie> getMoviesByKeyword(@PathVariable int tagId){
-		return movieService.getMoviesByTagId(tagId);
+	
+	@GetMapping("/{movie_id}/recommendations")																					
+	public Movie getRecommedations(@PathVariable int movie_id) {
+		return null;
 	}
+	
+	
+	@GetMapping("/{movie_id}/reviews")																					
+	public List<MovieReview> getReviews(@PathVariable int movie_id) {
+		return movieReviewService.getReviews(movie_id);
+	}
+
+	
+	@PutMapping("/{movie_id}/save_review")																					
+	public void saveMovieReview(@PathVariable int movie_id,@RequestBody MovieReview movieReview) {
+		movieReviewService.saveMovieReview(movieReview,movie_id);
+	}
+
+	
+	
+	@DeleteMapping("/{movie_id}/rating")
+	public Movie deleteRating(@PathVariable int movie_id) {
+		return null;
+	} 
+	
+	@PostMapping("/{movie_id}/rating")
+	public void saveRating(@PathVariable int movie_id,@RequestBody int value) {
+		
+		movieDetailService.rateMovie(movie_id, value);
+	}
+	
+	
+	@GetMapping("/latest") 
+	public Movie getLatest(){
+	  	  
+	 return movieService.getLatest();
+	  
+	 }
+	
+	@GetMapping("/top_rated") 
+	public Movie getTopRated(){
+	  	  
+	 return null;
+	  
+	 }
+	
+	
+	@GetMapping("/{movie_id}")
+	public MovieDetail getMovieDetail(@PathVariable int movie_id) {
+		
+		return movieDetailService.getMovieDetail(movie_id);
+	}
+	
+	
+
+	
+	/*
+	 * @GetMapping("/get_movies_by_keyword/{tagId}") public List<Movie>
+	 * getMoviesByKeyword(@PathVariable int tagId){ return
+	 * movieService.getMoviesByTagId(tagId); }
+	 */
 
 	
 	@PutMapping("/update_movie_detail")
@@ -107,8 +173,15 @@ public class MovieRestController {
 		
 	}
 	
+	
+	@PutMapping("{movie_id}/save_movie_keywords")
+	public Movie saveMovieTag(@RequestBody Tag tag,@PathVariable int movie_id){
+		return tagService.saveTag(tag, movie_id);
+	}			
+	
+	
 	@GetMapping("/print_json_sample")
-	public Movie JsonSample(){
+	public MovieReview JsonSample(){
 		
 		Movie movie = new Movie();
 		
@@ -138,6 +211,8 @@ public class MovieRestController {
 		
 		movieDetail.setVoteCount(0);
 		
+		movieDetail.setMovie(movie);
+		
 		movie.setMovieDetail(movieDetail);
 				
 		
@@ -145,7 +220,7 @@ public class MovieRestController {
 		Set<Tag> tagSet = new HashSet<Tag>();
 		
 		tag.setTagTitle("Action");
-		
+
 		tagSet.add(tag);
 		
 		tag.setTagTitle("Comedy");
@@ -154,8 +229,20 @@ public class MovieRestController {
 		
 		movie.setTags(tagSet);
 		
+		MovieReview movieReview = new MovieReview();
 		
-		return movie;
+		movieReview.setAuthor("James");
+		
+		movieReview.setContent("Good movie");
+		
+		movieReview.setUrl("sdfghjkl");
+		
+		movieReview.setMovie(movie);
+		
+		
+		
+		
+		return movieReview;
 	}
 	
 }

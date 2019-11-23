@@ -8,41 +8,36 @@ import javax.persistence.Id;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-
 @Entity
-@Table(name="MOVIEDETAIL")
+@Table(name = "MOVIEDETAIL")
 //@JsonIgnoreProperties(value={"movie"},allowSetters=true)
 public class MovieDetail {
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
-	@Column(name="id")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "movie_detail_id")
 	private int id;
-	
-	@Column(name="budget")
+
+	@Column(name = "budget")
 	private int budget;
-	
-	@Column(name="revenue")
+
+	@Column(name = "revenue")
 	private int revenue;
-	
-	@Column(name="run_time")
+
+	@Column(name = "run_time")
 	private int runtime;
 
-	@Column(name="vote_count")
+	@Column(name = "vote_count")
 	private int voteCount;
-	
 
-	@OneToOne(mappedBy="movieDetail")
+	@JsonIgnoreProperties("movie")
+	@OneToOne(mappedBy = "movieDetail")
 	private Movie movie;
-	
-	
+
 	public MovieDetail() {
 	}
-
-	
 
 	public int getBudget() {
 		return budget;
@@ -84,16 +79,13 @@ public class MovieDetail {
 		this.id = id;
 	}
 
-	
 	public Movie getMovie() {
 		return movie;
 	}
 
-
 	public void setMovie(Movie movie) {
 		this.movie = movie;
 	}
-
 
 	@Override
 	public String toString() {
@@ -101,5 +93,4 @@ public class MovieDetail {
 				+ ", voteCount=" + voteCount + ", movie=" + movie + "]";
 	}
 
-	
 }

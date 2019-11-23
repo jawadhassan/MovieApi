@@ -8,6 +8,8 @@ public interface MovieDetailDao {
 	
 	public void deleteMovieDetail(int id);
 	
-   public MovieDetail getMovieDetail (int id);	
+	public MovieDetail getMovieDetail (int id);	
+   
+	public void rateMovie(int id,int count);
 	
 }

@@ -6,6 +6,7 @@ import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -15,10 +16,10 @@ import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
 @Table(name="TAG")
-@JsonIgnoreProperties(value={"movies"},allowSetters=true)
 public class Tag {
 
 	@Id
@@ -29,13 +30,15 @@ public class Tag {
 	@Column(name="tag_title")
 	private String tagTitle;
 	
-	@ManyToMany(cascade=CascadeType.ALL)
+    @JsonIgnoreProperties("tags")
+	@ManyToMany(fetch=FetchType.LAZY,
+			cascade= {CascadeType.PERSIST,CascadeType.MERGE,CascadeType.DETACH, CascadeType.REFRESH})
 	@JoinTable(
-			name="MOVIETAG",
+			name="MOVIE_TAG",
 			joinColumns=@JoinColumn(name="tag_id"),
 			inverseJoinColumns=@JoinColumn(name="movie_id")
 	)
-	private Set<Movie> movies = new HashSet<Movie>();
+	private Set<Movie> movies;
 	
 	public int getId() {
 		return id;
@@ -52,16 +55,19 @@ public class Tag {
 		this.tagTitle = tagTitle;
 	}
 	
-	@Override
-	public String toString() {
-		return "Tag [id=" + id + ", tagTitle=" + tagTitle + "]";
-	}
+	
 	
 	public Set<Movie> getMovies() {
 		return movies;
 	}
 	public void setMovies(Set<Movie> movies) {
 		this.movies = movies;
+	}
+	
+	
+	@Override
+	public String toString() {
+		return "Tag [id=" + id + ", tagTitle=" + tagTitle + "]";
 	}
 	
 	

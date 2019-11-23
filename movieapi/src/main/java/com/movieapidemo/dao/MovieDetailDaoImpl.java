@@ -43,13 +43,22 @@ public class MovieDetailDaoImpl implements MovieDetailDao {
 	public MovieDetail getMovieDetail(int id) {
 	
 		Session currentSession = sessionFactory.getCurrentSession();
-		
-		
+
 		MovieDetail movieDetail = currentSession.get(MovieDetail.class, id);
-		
 
 		return movieDetail;
 	}
+
+	@Override
+	public void rateMovie(int id,int count) {
+	
+		Session currentSession = sessionFactory.getCurrentSession();
+		
+		Query query = currentSession.createQuery("update MovieDetail set voteCount=:count where movie.id=:movieId");
+		query.setParameter("count", count);
+		query.setParameter("movieId",id);
+	}
+
 
 	
 	
