@@ -18,8 +18,9 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import org.hibernate.validator.constraints.Length;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
 @Table(name = "MOVIE")
@@ -31,39 +32,44 @@ public class Movie {
 	private int id;
 
 	@Column(name = "movie_status")
+//	@NotBlank(message="Value cannot be empty")
 	private String status;
 
 	@Column(name = "movie_tag_line")
+//	@Length(max = 100, message = "The field must be less than 100 characters")
 	private String tagline;
 
 	@Column(name = "movie_title")
+//	@NotBlank(message="Value cannot be empty")
+	@Length(max = 50, message = "The field must be less than 50 characters")
 	private String title;
 
 	@Column(name = "movie_release_date")
 	private Date releaseDate;
 
+	/*
+	 * @JsonIgnoreProperties("movie")
+	 * 
+	 * @OneToOne(cascade = CascadeType.ALL)
+	 * 
+	 * @JoinColumn(name = "movie_detail_id")
+	 */
+
 	@JsonIgnoreProperties("movie")
-	@OneToOne(cascade = CascadeType.ALL)
-	@JoinColumn(name = "movie_detail_id")
+	@OneToOne(mappedBy = "movie", cascade = CascadeType.ALL)
 	private MovieDetail movieDetail;
 
 	@JsonIgnoreProperties("movies")
-	@ManyToMany(fetch=FetchType.LAZY,
-			cascade= {CascadeType.PERSIST,CascadeType.MERGE,CascadeType.DETACH, CascadeType.REFRESH})
-	@JoinTable(name = "MOVIE_TAG", 
-		joinColumns = @JoinColumn(name = "movie_id"), 
-		inverseJoinColumns = @JoinColumn(name = "tag_id"))
+	@ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH,
+			CascadeType.REFRESH })
+	@JoinTable(name = "MOVIE_TAG", joinColumns = @JoinColumn(name = "movie_id"), inverseJoinColumns = @JoinColumn(name = "tag_id"))
 	private Set<Tag> tags;
 
-	
-	
-	  @JsonIgnoreProperties("movie")
-	  @OneToMany(fetch=FetchType.LAZY, mappedBy="movie",
-	  cascade={CascadeType.DETACH,CascadeType.MERGE,CascadeType.PERSIST,CascadeType.REFRESH}) 
-	  private Set<MovieReview> movieReviews;
-	 
-	
-	
+	@JsonIgnoreProperties("movie")
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "movie", cascade = { CascadeType.DETACH, CascadeType.MERGE,
+			CascadeType.PERSIST, CascadeType.REFRESH })
+	private Set<MovieReview> movieReviews;
+
 	public Movie() {
 	}
 
@@ -123,44 +129,39 @@ public class Movie {
 		this.tags = tags;
 	}
 
-
-
-	
 	public void addTag(Tag tag) {
-		if(tags == null) {
-			tags = new HashSet<Tag>(); 
+		if (tags == null) {
+			tags = new HashSet<Tag>();
 		}
-		
+
 		tags.add(tag);
 	}
-	
-	
-	
-	  public void addMovieReview(MovieReview movieReview) { 
-		  if(movieReview == null){ 
-			
-			  movieReviews = new HashSet<MovieReview>(); 
-		  
-		  }
-	  
-	  movieReviews.add(movieReview);
-	  
-	  movieReview.setMovie(this);
-	  
-	  
-	  }
-	  
-	  
-	  
-	  public Set<MovieReview> getMovieReviews() { return movieReviews; }
-	  
-	  public void setMovieReviews(Set<MovieReview> movieReviews) {
-	  this.movieReviews = movieReviews; }
-	 	
+
+	public void addMovieReview(MovieReview movieReview) {
+		if (movieReview == null) {
+
+			movieReviews = new HashSet<MovieReview>();
+
+		}
+
+		movieReviews.add(movieReview);
+
+		movieReview.setMovie(this);
+
+	}
+
+	public Set<MovieReview> getMovieReviews() {
+		return movieReviews;
+	}
+
+	public void setMovieReviews(Set<MovieReview> movieReviews) {
+		this.movieReviews = movieReviews;
+	}
+
 	@Override
 	public String toString() {
-		return "Movie [id=" + id + ", status=" + status + ", tagline=" + tagline + ", title=" + title + ", releaseDate="
-				+ releaseDate + "]";
+		return "Movie [status=" + status + ", tagline=" + tagline + ", title=" + title + ", releaseDate=" + releaseDate
+				+ ", movieDetail=" + movieDetail + ", tags=" + tags + "]";
 	}
 
 }

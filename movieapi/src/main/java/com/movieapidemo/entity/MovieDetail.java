@@ -1,13 +1,17 @@
 package com.movieapidemo.entity;
 
+import java.time.Duration;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
@@ -20,20 +24,31 @@ public class MovieDetail {
 	@Column(name = "movie_detail_id")
 	private int id;
 
-	@Column(name = "budget")
+	@Column(name = "budget", nullable = false)
+//	@Min(value = 0, message = "Value cannot be less than zero")
 	private int budget;
 
 	@Column(name = "revenue")
+//	@Min(value = 0, message = "Value cannot be less than zero")
 	private int revenue;
 
-	@Column(name = "run_time")
-	private int runtime;
+	@Column(name = "run_time", nullable = false)
+	private Duration runtime;
 
 	@Column(name = "vote_count")
+//	@Min(value = 1, message = "Value cannot be less than 1")
+//	@Max(value = 5, message = "Value cannot be greater than 5")
 	private int voteCount;
 
+	/*
+	 * @JsonIgnoreProperties("movie")
+	 * 
+	 * @OneToOne(mappedBy = "movieDetail")
+	 */
+
 	@JsonIgnoreProperties("movie")
-	@OneToOne(mappedBy = "movieDetail")
+	@OneToOne
+	@JoinColumn(name = "movie_id")
 	private Movie movie;
 
 	public MovieDetail() {
@@ -53,14 +68,6 @@ public class MovieDetail {
 
 	public void setRevenue(int revenue) {
 		this.revenue = revenue;
-	}
-
-	public int getRuntime() {
-		return runtime;
-	}
-
-	public void setRuntime(int runtime) {
-		this.runtime = runtime;
 	}
 
 	public int getVoteCount() {
@@ -87,10 +94,19 @@ public class MovieDetail {
 		this.movie = movie;
 	}
 
+	@JsonFormat(shape = JsonFormat.Shape.NUMBER_INT)
+	public Duration getRuntime() {
+		return runtime;
+	}
+
+	public void setRuntime(Duration runtime) {
+		this.runtime = runtime;
+	}
+
 	@Override
 	public String toString() {
-		return "MovieDetail [id=" + id + ", budget=" + budget + ", revenue=" + revenue + ", runtime=" + runtime
-				+ ", voteCount=" + voteCount + ", movie=" + movie + "]";
+		return "MovieDetail [budget=" + budget + ", revenue=" + revenue + ", runtime=" + runtime + ", voteCount="
+				+ voteCount + "]";
 	}
 
 }

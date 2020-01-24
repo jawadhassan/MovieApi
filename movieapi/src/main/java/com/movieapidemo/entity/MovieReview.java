@@ -1,5 +1,7 @@
 package com.movieapidemo.entity;
 
+import java.util.Date;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -10,37 +12,47 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.validator.constraints.Length;
 
 @Entity
-@Table(name="MOVIEREVIEW")
+@Table(name = "MOVIEREVIEW")
 public class MovieReview {
 
-	
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
-	@Column(name="movie_review_id")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "movie_review_id")
 	private int id;
-	
-	@Column(name="author")
+
+	@Column(name = "author")
+//	@NotBlank(message="Value cannot be empty")
+	@Length(max = 50, message = "The field must be less than 50 characters")
 	private String author;
-	
-	@Column(name="content")
+
+	@Column(name = "content")
+//	@NotBlank(message="Value cannot be empty")
+	@Length(max = 300, message = "The field must be less than 300 characters")
 	private String content;
-	
-	@Column(name="url")
-	private String url;
+
+	@Column(name = "url")
+//	@Email(message="Email address cannot be empty")
+	private String email;
+
+	@CreationTimestamp
+	private Date createDate;
+
+	@UpdateTimestamp
+	private Date updateDate;
 
 	public int getId() {
 		return id;
 	}
 
-	
-	@ManyToOne(cascade= {CascadeType.DETACH,CascadeType.MERGE,CascadeType.PERSIST,CascadeType.REFRESH})
-	@JoinColumn(name="movie_id")
+	@ManyToOne(cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH })
+	@JoinColumn(name = "movie_id")
 	private Movie movie;
 
-	
 	public void setId(int id) {
 		this.id = id;
 	}
@@ -61,14 +73,6 @@ public class MovieReview {
 		this.content = content;
 	}
 
-	public String getUrl() {
-		return url;
-	}
-
-	public void setUrl(String url) {
-		this.url = url;
-	}
-
 	public Movie getMovie() {
 		return movie;
 	}
@@ -77,12 +81,34 @@ public class MovieReview {
 		this.movie = movie;
 	}
 
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public Date getCreateDate() {
+		return createDate;
+	}
+
+	public void setCreateDate(Date createDate) {
+		this.createDate = createDate;
+	}
+
+	public Date getUpdateDate() {
+		return updateDate;
+	}
+
+	public void setUpdateDate(Date updateDate) {
+		this.updateDate = updateDate;
+	}
+
 	@Override
 	public String toString() {
-		return "MovieReview [id=" + id + ", author=" + author + ", content=" + content + ", url=" + url + "]";
+		return "MovieReview [author=" + author + ", content=" + content + ", email=" + email + ", createDate="
+				+ createDate + ", updateDate=" + updateDate + "]";
 	}
-	
-  	
-	
-	
+
 }
