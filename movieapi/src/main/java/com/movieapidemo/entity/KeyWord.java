@@ -16,26 +16,26 @@ import javax.persistence.Table;
 
 import org.hibernate.validator.constraints.Length;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
-@Table(name = "TAG")
-public class Tag {
+@Table(name = "KEYWORD")
+public class KeyWord {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	@Column(name = "id")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "keyword_id")
 	private int id;
 
-	@Column(name = "tag_title")
+	@Column(name = "keyword_title")
 //	@NotBlank(message="Value cannot be empty")
 	@Length(max = 50, message = "The field must be less than 50 characters")
-	private String tagTitle;
+	private String keywordTitle;
 
-	@JsonIgnoreProperties("tags")
+	@JsonIgnore
 	@ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH,
 			CascadeType.REFRESH })
-	@JoinTable(name = "MOVIE_TAG", joinColumns = @JoinColumn(name = "tag_id"), inverseJoinColumns = @JoinColumn(name = "movie_id"))
+	@JoinTable(name = "MOVIE_KEYWORD", joinColumns = @JoinColumn(name = "keyword_id"), inverseJoinColumns = @JoinColumn(name = "movie_id"))
 	private Set<Movie> movies;
 
 	public int getId() {
@@ -46,12 +46,12 @@ public class Tag {
 		this.id = id;
 	}
 
-	public String getTagTitle() {
-		return tagTitle;
+	public String getKeywordTitle() {
+		return keywordTitle;
 	}
 
-	public void setTagTitle(String tagTitle) {
-		this.tagTitle = tagTitle;
+	public void setKeywordTitle(String tagTitle) {
+		this.keywordTitle = tagTitle;
 	}
 
 	public Set<Movie> getMovies() {
@@ -64,7 +64,7 @@ public class Tag {
 
 	@Override
 	public String toString() {
-		return "Tag [id=" + id + ", tagTitle=" + tagTitle + "]";
+		return "keyWord [id=" + id + ", tagTitle=" + keywordTitle + "]";
 	}
 
 }

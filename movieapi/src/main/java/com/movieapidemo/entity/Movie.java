@@ -1,7 +1,9 @@
 package com.movieapidemo.entity;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -47,14 +49,6 @@ public class Movie {
 	@Column(name = "movie_release_date")
 	private Date releaseDate;
 
-	/*
-	 * @JsonIgnoreProperties("movie")
-	 * 
-	 * @OneToOne(cascade = CascadeType.ALL)
-	 * 
-	 * @JoinColumn(name = "movie_detail_id")
-	 */
-
 	@JsonIgnoreProperties("movie")
 	@OneToOne(mappedBy = "movie", cascade = CascadeType.ALL)
 	private MovieDetail movieDetail;
@@ -62,13 +56,12 @@ public class Movie {
 	@JsonIgnoreProperties("movies")
 	@ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH,
 			CascadeType.REFRESH })
-	@JoinTable(name = "MOVIE_TAG", joinColumns = @JoinColumn(name = "movie_id"), inverseJoinColumns = @JoinColumn(name = "tag_id"))
-	private Set<Tag> tags;
+	@JoinTable(name = "MOVIE_KEYWORD", joinColumns = @JoinColumn(name = "movie_id"), inverseJoinColumns = @JoinColumn(name = "keyword_id"))
+	private Set<KeyWord> keyWords;
 
 	@JsonIgnoreProperties("movie")
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "movie", cascade = { CascadeType.DETACH, CascadeType.MERGE,
-			CascadeType.PERSIST, CascadeType.REFRESH })
-	private Set<MovieReview> movieReviews;
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "movie", cascade = { CascadeType.ALL })
+	private List<MovieReview> movieReviews;
 
 	public Movie() {
 	}
@@ -121,26 +114,26 @@ public class Movie {
 		this.movieDetail = movieDetail;
 	}
 
-	public Set<Tag> getTags() {
-		return tags;
+	public Set<KeyWord> getkeyWords() {
+		return keyWords;
 	}
 
-	public void setTags(Set<Tag> tags) {
-		this.tags = tags;
+	public void setKeyWords(Set<KeyWord> keyWords) {
+		this.keyWords = keyWords;
 	}
 
-	public void addTag(Tag tag) {
-		if (tags == null) {
-			tags = new HashSet<Tag>();
+	public void addkeyWord(KeyWord keyWord) {
+		if (keyWords == null) {
+			keyWords = new HashSet<KeyWord>();
 		}
 
-		tags.add(tag);
+		keyWords.add(keyWord);
 	}
 
 	public void addMovieReview(MovieReview movieReview) {
 		if (movieReview == null) {
 
-			movieReviews = new HashSet<MovieReview>();
+			movieReviews = new ArrayList<MovieReview>();
 
 		}
 
@@ -150,18 +143,17 @@ public class Movie {
 
 	}
 
-	public Set<MovieReview> getMovieReviews() {
+	public List<MovieReview> getMovieReviews() {
 		return movieReviews;
 	}
 
-	public void setMovieReviews(Set<MovieReview> movieReviews) {
+	public void setMovieReviews(List<MovieReview> movieReviews) {
 		this.movieReviews = movieReviews;
 	}
 
 	@Override
 	public String toString() {
 		return "Movie [status=" + status + ", tagline=" + tagline + ", title=" + title + ", releaseDate=" + releaseDate
-				+ ", movieDetail=" + movieDetail + ", tags=" + tags + "]";
+				+ ", movieDetail=" + movieDetail + ", keyWords=" + keyWords + "]";
 	}
-
 }

@@ -19,19 +19,19 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.movieapidemo.entity.ApiResponse;
+import com.movieapidemo.entity.KeyWord;
 import com.movieapidemo.entity.Movie;
 import com.movieapidemo.entity.MovieDetail;
 import com.movieapidemo.entity.MovieReview;
-import com.movieapidemo.entity.Tag;
 import com.movieapidemo.exceptions.MovieNotFoundException;
 import com.movieapidemo.exceptions.RatingException;
+import com.movieapidemo.service.KeyWordService;
 import com.movieapidemo.service.MovieDetailService;
 import com.movieapidemo.service.MovieReviewService;
 import com.movieapidemo.service.MovieService;
-import com.movieapidemo.service.TagService;
 
 @RestController
 @RequestMapping("/movie")
@@ -44,16 +44,12 @@ public class MovieRestController {
 	MovieDetailService movieDetailService;
 
 	@Autowired
-	TagService tagService;
+	KeyWordService keyWordService;
 
 	@Autowired
 	MovieReviewService movieReviewService;
 
-	/*
-	 * @GetMapping("/movies") public List<Movie> getMovies(){
-	 * 
-	 * return movieService.getMovies(); }
-	 */
+	/* Movie URLs */
 
 	@PostMapping("/save")
 	public ResponseEntity<Movie> saveMovie(@Valid @RequestBody Movie movie) {
@@ -65,18 +61,6 @@ public class MovieRestController {
 		return new ResponseEntity<Movie>(movie, HttpStatus.OK);
 
 	}
-
-	/*
-	 * @GetMapping("/{movie_id}") public Movie getMovie(@PathVariable int movie_id)
-	 * {
-	 * 
-	 * if(movie_id >= movieService.getMovies().size() || movie_id< 0) { throw new
-	 * MovieNotFoundException("Movie not found exception:"+movie_id); }
-	 * 
-	 * return movieService.getMovie(movie_id);
-	 * 
-	 * }
-	 */
 
 	@PutMapping("/update/{movie_id}")
 	public ResponseEntity<Movie> update(@Valid @RequestBody Movie movie, @PathVariable int movie_id) {
@@ -94,7 +78,7 @@ public class MovieRestController {
 	}
 
 	@DeleteMapping("/delete/{movie_id}")
-	public String delete(@PathVariable int movie_id) {
+	public ResponseEntity<ApiResponse> delete(@PathVariable int movie_id) {
 
 		if (movie_id < 0 || (movieService.getMovie(movie_id) == null)) {
 			throw new MovieNotFoundException("Movie not found exception:" + movie_id);
@@ -102,13 +86,88 @@ public class MovieRestController {
 
 		movieService.deleteMovie(movie_id);
 
-		return ("Movie with" + movie_id + "has been deleted");
+		ApiResponse apiResponse = new ApiResponse();
+
+		apiResponse.setMessage("Movie Record with ID: " + movie_id + " has been deleted");
+		apiResponse.setStatus(HttpStatus.OK.value());
+		apiResponse.setTimeStamp(System.currentTimeMillis());
+
+		return new ResponseEntity<ApiResponse>(apiResponse, HttpStatus.OK);
 
 	}
 
-	@GetMapping("/{movie_id}/keywords")
-	public List<Tag> getKeyWords(@PathVariable int movie_id) {
-		// TODO:check if it should be part of tag service
+	/* Movie Detail URLs */
+
+	@PostMapping("/save_movie_detail/{movie_id}")
+	public ResponseEntity<ApiResponse> saveMovieDetail(@Valid @RequestBody MovieDetail movieDetail,
+			@PathVariable int movie_id) {
+
+		// TODO:save movie detail only when movie detail is not present
+//		if (movie_id < 0 || (movieService.getMovie(movie_id) == null)) {
+//			throw new MovieNotFoundException("Movie not found exception:" + movie_id);
+//		}
+
+		movieDetailService.saveMovieDetail(movieDetail, movie_id);
+
+		ApiResponse apiResponse = new ApiResponse();
+
+		apiResponse.setMessage("Movie Detail Record with Movie ID: " + movie_id + " has been added");
+		apiResponse.setStatus(HttpStatus.OK.value());
+		apiResponse.setTimeStamp(System.currentTimeMillis());
+
+		return new ResponseEntity<ApiResponse>(apiResponse, HttpStatus.OK);
+
+	}
+
+	@GetMapping("/{movie_id}")
+	public MovieDetail getMovieDetail(@PathVariable int movie_id) {
+
+		if (movie_id < 0 || (movieService.getMovie(movie_id) == null)) {
+			throw new MovieNotFoundException("Movie not found exception:" + movie_id);
+		}
+
+		return movieDetailService.getMovieDetail(movie_id);
+	}
+
+	/* Movie Review URLs */
+
+	@PostMapping("/save_review/{movie_id}")
+	public ResponseEntity<ApiResponse> saveMovieReview(@PathVariable int movie_id,
+			@Valid @RequestBody MovieReview movieReview) {
+
+		if (movie_id < 0 || (movieService.getMovie(movie_id) == null)) {
+			throw new MovieNotFoundException("Movie not found exception:" + movie_id);
+		}
+
+		movieReviewService.saveMovieReview(movieReview, movie_id);
+
+		ApiResponse apiResponse = new ApiResponse();
+
+		apiResponse.setMessage("Movie Review with Movie ID: " + movie_id + " has been been added");
+		apiResponse.setStatus(HttpStatus.OK.value());
+		apiResponse.setTimeStamp(System.currentTimeMillis());
+
+		return new ResponseEntity<ApiResponse>(apiResponse, HttpStatus.OK);
+
+	}
+
+	@GetMapping("/reviews/{movie_id}")
+	public List<MovieReview> getReviews(@PathVariable int movie_id) {
+
+		if (movie_id < 0 || (movieService.getMovie(movie_id) == null)) {
+			throw new MovieNotFoundException("Movie not found exception:" + movie_id);
+		}
+
+		List<MovieReview> reviews = movieReviewService.getReviews(movie_id);
+
+		return reviews;
+	}
+
+	/* Movie Keywords URLs */
+
+	@GetMapping("/keywords/{movie_id}")
+	public List<KeyWord> getKeyWords(@PathVariable int movie_id) {
+		// TODO:check if it should be part of keyWord service
 
 		if (movie_id < 0 || (movieService.getMovie(movie_id) == null)) {
 			throw new MovieNotFoundException("Movie not found exception:" + movie_id);
@@ -117,37 +176,19 @@ public class MovieRestController {
 		return movieService.getTags(movie_id);
 	}
 
-	@GetMapping("/{movie_id}/recommendations")
-	public Movie getRecommedations(@PathVariable int movie_id) {
-		return null;
-	}
-
-	@GetMapping("/{movie_id}/reviews")
-	public List<MovieReview> getReviews(@PathVariable int movie_id) {
+	@PostMapping("save_movie_keywords/{movie_id}")
+	public void saveMovieKeyWord(@Valid @RequestBody KeyWord keyWord, @PathVariable int movie_id) {
 
 		if (movie_id < 0 || (movieService.getMovie(movie_id) == null)) {
 			throw new MovieNotFoundException("Movie not found exception:" + movie_id);
 		}
 
-		return movieReviewService.getReviews(movie_id);
+		keyWordService.saveKeyWord(keyWord, movie_id);
 	}
 
-	@PostMapping("/{movie_id}/save_review")
-	public void saveMovieReview(@PathVariable int movie_id, @Valid @RequestBody MovieReview movieReview) {
+	/* Movie Rating URLs */
 
-		if (movie_id < 0 || (movieService.getMovie(movie_id) == null)) {
-			throw new MovieNotFoundException("Movie not found exception:" + movie_id);
-		}
-
-		movieReviewService.saveMovieReview(movieReview, movie_id);
-	}
-
-	@DeleteMapping("/{movie_id}/rating")
-	public Movie deleteRating(@PathVariable int movie_id) {
-		return null;
-	}
-
-	@PostMapping("/{movie_id}/rating")
+	@PostMapping("/rating/{movie_id}")
 	public void saveRating(@PathVariable int movie_id, @RequestBody int value) {
 
 		if (movie_id < 0 || (movieService.getMovie(movie_id) == null)) {
@@ -163,9 +204,17 @@ public class MovieRestController {
 
 	@GetMapping("/latest")
 	public Movie getLatest() {
-
 		return movieService.getLatest();
+	}
 
+	@GetMapping("/recommendations/{movie_id}")
+	public Movie getRecommedations(@PathVariable int movie_id) {
+		return null;
+	}
+
+	@DeleteMapping("/rating/{movie_id}")
+	public Movie deleteRating(@PathVariable int movie_id) {
+		return null;
 	}
 
 	@GetMapping("/top_rated")
@@ -175,51 +224,6 @@ public class MovieRestController {
 
 	}
 
-	@GetMapping("/{movie_id}")
-	public MovieDetail getMovieDetail(@PathVariable int movie_id) {
-
-		if (movie_id < 0 || (movieService.getMovie(movie_id) == null)) {
-			throw new MovieNotFoundException("Movie not found exception:" + movie_id);
-		}
-
-		return movieDetailService.getMovieDetail(movie_id);
-	}
-
-	/*
-	 * @GetMapping("/get_movies_by_keyword/{tagId}") public List<Movie>
-	 * getMoviesByKeyword(@PathVariable int tagId){ return
-	 * movieService.getMoviesByTagId(tagId); }
-	 */
-
-//	@PutMapping("/update_movie_detail")
-//	public MovieDetail updateMovieDetail(@Valid @RequestBody MovieDetail movieDetail) {
-//
-//		movieDetailService.saveMovieDetail(movieDetail);
-//
-//		return movieDetail;
-//
-//	}
-
-	@PostMapping("/save_movie_detail/{movie_id}")
-	@ResponseBody
-	public String saveMovieDetail(@Valid @RequestBody MovieDetail movieDetail, @PathVariable int movie_id) {
-
-		movieDetailService.saveMovieDetail(movieDetail, movie_id);
-
-		return ("Movie Detail with movie id:" + movie_id + "has been added");
-
-	}
-
-	@PutMapping("{movie_id}/save_movie_keywords")
-	public Movie saveMovieTag(@Valid @RequestBody Tag tag, @PathVariable int movie_id) {
-
-		if (movie_id < 0 || (movieService.getMovie(movie_id) == null)) {
-			throw new MovieNotFoundException("Movie not found exception:" + movie_id);
-		}
-
-		return tagService.saveTag(tag, movie_id);
-	}
-
 	@GetMapping("/print_json_sample")
 	public Movie JsonSample() {
 
@@ -227,7 +231,7 @@ public class MovieRestController {
 
 		MovieDetail movieDetail = new MovieDetail();
 
-		Tag tag = new Tag();
+		KeyWord keyWord = new KeyWord();
 
 		movie.setId(0);
 
@@ -259,17 +263,17 @@ public class MovieRestController {
 
 		movie.setMovieDetail(movieDetail);
 
-		Set<Tag> tagSet = new HashSet<Tag>();
+		Set<KeyWord> tagSet = new HashSet<KeyWord>();
 
-		tag.setTagTitle("Action");
+		keyWord.setKeywordTitle("Action");
 
-		tagSet.add(tag);
+		tagSet.add(keyWord);
 
-		tag.setTagTitle("Comedy");
+		keyWord.setKeywordTitle("Comedy");
 
-		tagSet.add(tag);
+		tagSet.add(keyWord);
 
-		movie.setTags(tagSet);
+		// movie.setTags(tagSet);
 
 		MovieReview movieReview = new MovieReview();
 
@@ -285,7 +289,7 @@ public class MovieRestController {
 
 		reviewCollection.add(movieReview);
 
-		movie.setMovieReviews(reviewCollection);
+		// movie.setMovieReviews(reviewCollection);
 
 		movie.setMovieDetail(movieDetail);
 

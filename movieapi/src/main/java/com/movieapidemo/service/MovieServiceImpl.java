@@ -1,33 +1,31 @@
 package com.movieapidemo.service;
 
 import java.util.List;
-import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.movieapidemo.dao.MovieDao;
+import com.movieapidemo.entity.KeyWord;
 import com.movieapidemo.entity.Movie;
-import com.movieapidemo.entity.Tag;
 
 @Service
 public class MovieServiceImpl implements MovieService {
 
 	@Autowired
 	MovieDao movieDao;
-	
-	
+
 	@Override
 	@Transactional
 	public List<Movie> getMovies() {
-		return  movieDao.getMovies();
+		return movieDao.getMovies();
 	}
 
 	@Override
 	@Transactional
 	public void saveMovie(Movie movie) {
-		 movieDao.saveMovie(movie);
+		movieDao.saveMovie(movie);
 	}
 
 	@Override
@@ -44,13 +42,13 @@ public class MovieServiceImpl implements MovieService {
 
 	@Override
 	@Transactional
-	public List<Movie> getMoviesByTagId(int id) {
-		
-		 List<Movie> movies = movieDao.getMoviesByTagId(id);
-		 
-		 System.out.println(movies.size());
-		 	 
-		 return movies;
+	public List<Movie> getMoviesByKeyWordId(int id) {
+
+		List<Movie> movies = movieDao.getMoviesByKeyWordId(id);
+
+		System.out.println(movies.size());
+
+		return movies;
 	}
 
 	@Override
@@ -61,9 +59,8 @@ public class MovieServiceImpl implements MovieService {
 
 	@Override
 	@Transactional
-	public List<Tag> getTags(int id){
-		return movieDao.getTags(id);
+	public List<KeyWord> getTags(int id) {
+		return movieDao.getKeyWords(id);
 	}
-	
-	
+
 }

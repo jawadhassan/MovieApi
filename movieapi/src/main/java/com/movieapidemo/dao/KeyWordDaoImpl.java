@@ -8,67 +8,58 @@ import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import com.movieapidemo.entity.KeyWord;
 import com.movieapidemo.entity.Movie;
-import com.movieapidemo.entity.Tag;
 
 @Repository
-public class TagDaoImpl implements TagDao {
+public class KeyWordDaoImpl implements KeyWordDao {
 
-	
 	@Autowired
 	SessionFactory sessionFactory;
-	
-	
+
 	@Override
-	public Tag getTag(int id) {
+	public KeyWord getKeyWord(int id) {
 
 		Session currentSession = sessionFactory.getCurrentSession();
-		
-		Tag tag = currentSession.get(Tag.class, id);
-		
-		return tag;
+
+		KeyWord keyWord = currentSession.get(KeyWord.class, id);
+
+		return keyWord;
 	}
 
 	@Override
-	public void deleteTag(int id) {
+	public void deleteKeyWord(int id) {
 		Session currentSession = sessionFactory.getCurrentSession();
-		
-		Query<Tag> query = 
-				currentSession.createQuery("delete from Tag where id:=tagId");
-		
-				query.setParameter("tagId", id);
-						
-				query.executeUpdate();
+
+		Query<KeyWord> query = currentSession.createQuery("delete from keyWord where id:=keyWordId");
+
+		query.setParameter("keyWordId", id);
+
+		query.executeUpdate();
 	}
 
 	@Override
-	public Movie saveTag(Tag tag,int id) {
+	public void saveKeyWord(KeyWord keyWord, int id) {
 		Session currentSession = sessionFactory.getCurrentSession();
-		
+
 		Movie movie = currentSession.get(Movie.class, id);
-		
-		movie.addTag(tag);
-		
-		currentSession.saveOrUpdate(tag);
-		
-		return movie;
-		
+
+		movie.addkeyWord(keyWord);
+
+		currentSession.saveOrUpdate(keyWord);
+
 	}
 
 	@Override
-	public List<Tag> getTags() {
-		
+	public List<KeyWord> getKeyWords() {
+
 		Session currentSession = sessionFactory.getCurrentSession();
-		
-		Query<Tag> query =
-				currentSession.createQuery("from Tag",Tag.class);
-		
-		List<Tag>tags = query.getResultList();
-		
-		return tags;
+
+		Query<KeyWord> query = currentSession.createQuery("from keyWord", KeyWord.class);
+
+		List<KeyWord> keyWords = query.getResultList();
+
+		return keyWords;
 	}
 
-	
-	
-	
 }

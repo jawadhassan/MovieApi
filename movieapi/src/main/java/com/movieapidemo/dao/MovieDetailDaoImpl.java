@@ -24,12 +24,6 @@ public class MovieDetailDaoImpl implements MovieDetailDao {
 		 */
 		Session currentSession = sessionFactory.getCurrentSession();
 
-		/*
-		 * Query<Movie> query = currentSession
-		 * .createQuery("Select mv from Movie mv LEFT JOIN FETCH mv.tags mvt where mv.id=:movie_id"
-		 * , Movie.class);
-		 */
-
 		Query<Movie> query = currentSession.createQuery("Select mv from Movie mv where mv.id=:movie_id", Movie.class);
 
 		query.setParameter("movie_id", movie_id);

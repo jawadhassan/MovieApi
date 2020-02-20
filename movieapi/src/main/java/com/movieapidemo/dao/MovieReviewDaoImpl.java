@@ -22,12 +22,13 @@ public class MovieReviewDaoImpl implements MovieReviewDao {
 
 		Session currentSession = sessionFactory.getCurrentSession();
 
-		Query<MovieReview> query = currentSession.createQuery("mv.movieReview from Movie mv where mv.id=:movie_id",
-				MovieReview.class);
+		Query query = currentSession.createQuery("Select mv.movieReviews from Movie mv where mv.id=:movie_id");
 
 		query.setParameter("movie_id", movie_id);
 
-		return query.getResultList();
+		List<MovieReview> movieReview = query.getResultList();
+
+		return movieReview;
 	}
 
 	@Override
