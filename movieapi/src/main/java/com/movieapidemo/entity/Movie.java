@@ -21,6 +21,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import org.hibernate.validator.constraints.Length;
+import org.hibernate.validator.constraints.NotBlank;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -34,15 +35,15 @@ public class Movie {
 	private int id;
 
 	@Column(name = "movie_status")
-//	@NotBlank(message="Value cannot be empty")
+	@NotBlank(message = "Status cannot be empty")
 	private String status;
 
 	@Column(name = "movie_tag_line")
-//	@Length(max = 100, message = "The field must be less than 100 characters")
+	@Length(max = 100, message = "The field must be less than 100 characters")
 	private String tagline;
 
 	@Column(name = "movie_title")
-//	@NotBlank(message="Value cannot be empty")
+	@NotBlank(message = "Title cannot be empty")
 	@Length(max = 50, message = "The field must be less than 50 characters")
 	private String title;
 

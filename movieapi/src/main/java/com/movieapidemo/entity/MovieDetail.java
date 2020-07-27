@@ -10,6 +10,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -25,19 +27,19 @@ public class MovieDetail {
 	private int id;
 
 	@Column(name = "budget", nullable = false)
-//	@Min(value = 0, message = "Value cannot be less than zero")
+	@Min(value = 0, message = "Value cannot be less than zero")
 	private int budget;
 
 	@Column(name = "revenue")
-//	@Min(value = 0, message = "Value cannot be less than zero")
+	@Min(value = 0, message = "Value cannot be less than zero")
 	private int revenue;
 
 	@Column(name = "run_time", nullable = false)
 	private Duration runtime;
 
 	@Column(name = "vote_count")
-//	@Min(value = 1, message = "Value cannot be less than 1")
-//	@Max(value = 5, message = "Value cannot be greater than 5")
+	@Min(value = 1, message = "Value cannot be less than 1")
+	@Max(value = 5, message = "Value cannot be greater than 5")
 	private int voteCount;
 
 	/*

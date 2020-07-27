@@ -4,4 +4,14 @@
 
 <web-app>
   <display-name>Archetype Created Web Application</display-name>
+  <filter>
+  	<filter-name>JwtRequestFilter</filter-name>
+  	<display-name>JwtRequestFilter</display-name>
+  	<description></description>
+  	<filter-class>com.movieapidemo.filters.JwtRequestFilter</filter-class>
+  </filter>
+  <filter-mapping>
+  	<filter-name>JwtRequestFilter</filter-name>
+  	<url-pattern>/JwtRequestFilter</url-pattern>
+  </filter-mapping>
 </web-app>

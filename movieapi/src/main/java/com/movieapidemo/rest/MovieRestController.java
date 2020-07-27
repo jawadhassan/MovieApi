@@ -12,6 +12,10 @@ import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,16 +26,21 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.movieapidemo.entity.ApiResponse;
+import com.movieapidemo.entity.AuthenticateRequest;
+import com.movieapidemo.entity.AuthenticateResponse;
 import com.movieapidemo.entity.KeyWord;
 import com.movieapidemo.entity.Movie;
 import com.movieapidemo.entity.MovieDetail;
 import com.movieapidemo.entity.MovieReview;
+import com.movieapidemo.entity.User;
 import com.movieapidemo.exceptions.MovieNotFoundException;
 import com.movieapidemo.exceptions.RatingException;
+import com.movieapidemo.service.ApiUserDetailService;
 import com.movieapidemo.service.KeyWordService;
 import com.movieapidemo.service.MovieDetailService;
 import com.movieapidemo.service.MovieReviewService;
 import com.movieapidemo.service.MovieService;
+import com.movieapidemo.util.JWTUtil;
 
 @RestController
 @RequestMapping("/movie")
@@ -48,6 +57,15 @@ public class MovieRestController {
 
 	@Autowired
 	MovieReviewService movieReviewService;
+
+	@Autowired
+	AuthenticationManager authenticationManager;
+
+	@Autowired
+	ApiUserDetailService apiUserDetailService;
+
+	@Autowired
+	JWTUtil jwtUtil;
 
 	/* Movie URLs */
 
@@ -177,13 +195,23 @@ public class MovieRestController {
 	}
 
 	@PostMapping("save_movie_keywords/{movie_id}")
-	public void saveMovieKeyWord(@Valid @RequestBody KeyWord keyWord, @PathVariable int movie_id) {
+	public ResponseEntity<ApiResponse> saveMovieKeyWord(@Valid @RequestBody KeyWord keyWord,
+			@PathVariable int movie_id) {
 
 		if (movie_id < 0 || (movieService.getMovie(movie_id) == null)) {
 			throw new MovieNotFoundException("Movie not found exception:" + movie_id);
 		}
 
 		keyWordService.saveKeyWord(keyWord, movie_id);
+
+		ApiResponse apiResponse = new ApiResponse();
+
+		apiResponse.setMessage("Keyword with Movie ID: " + movie_id + " has been been added");
+		apiResponse.setStatus(HttpStatus.OK.value());
+		apiResponse.setTimeStamp(System.currentTimeMillis());
+
+		return new ResponseEntity<ApiResponse>(apiResponse, HttpStatus.OK);
+
 	}
 
 	/* Movie Rating URLs */
@@ -222,6 +250,35 @@ public class MovieRestController {
 
 		return null;
 
+	}
+
+	// Authentication Code
+
+	@PostMapping("/authenticate")
+	public ResponseEntity<?> createAuthenticationToken(@RequestBody AuthenticateRequest authenticationRequest)
+			throws Exception {
+
+		try {
+			authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
+					authenticationRequest.getUsername(), authenticationRequest.getPassword()));
+
+		} catch (BadCredentialsException ex) {
+			throw new Exception("Incorrect username or Password" + ex);
+		}
+
+		final UserDetails userDetails = apiUserDetailService.loadUserByUsername(authenticationRequest.getUsername());
+
+		final String jwt = jwtUtil.generateToken(userDetails);
+
+		return ResponseEntity.ok(new AuthenticateResponse(jwt));
+	}
+
+	@PostMapping
+	public ResponseEntity<?> saveUser(@RequestBody User user) throws Exception {
+
+		apiUserDetailService.save(user);
+
+		return ResponseEntity.ok("User saved");
 	}
 
 	@GetMapping("/print_json_sample")
