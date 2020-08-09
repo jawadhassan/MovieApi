@@ -4,7 +4,7 @@ import com.movieapidemo.entity.User;
 
 public interface UserDao {
 
-	public User getUser(String username);
+	public User findUserByName(String username);
 
 	public User getUser(int id);
 

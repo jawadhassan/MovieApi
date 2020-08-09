@@ -13,7 +13,7 @@ public class UserDaoImpl implements UserDao {
 	SessionFactory sessionFactory;
 
 	@Override
-	public User getUser(String username) {
+	public User findUserByName(String username) {
 
 		Session currentSession = sessionFactory.getCurrentSession();
 
