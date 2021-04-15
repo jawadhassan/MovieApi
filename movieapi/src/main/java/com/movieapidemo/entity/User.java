@@ -17,11 +17,13 @@ import org.springframework.security.core.userdetails.UserDetails;
 @Entity
 @Table(name = "user")
 public class User implements UserDetails{
+	
+	public User() {
 
+	}
+
+	
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private long Id;
-
 	@Column(name = "username")
 	private String username;
 
@@ -30,6 +32,9 @@ public class User implements UserDetails{
 
 	@Column(name = "fullname")
 	private String fullname;
+	
+	@Column(name = "enabled")
+	private Boolean enabled;
 	
 	public String getUsername() {
 		return username;
@@ -55,9 +60,7 @@ public class User implements UserDetails{
 		this.fullname = fullname;
 	}
 
-	public long getId() {
-		return Id;
-	}
+	
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -87,6 +90,20 @@ public class User implements UserDetails{
 	public boolean isEnabled() {
 		// TODO Auto-generated method stub
 		return true;
+	}
+
+	public Boolean getEnabled() {
+		return enabled;
+	}
+
+	public void setEnabled(Boolean enabled) {
+		this.enabled = enabled;
+	}
+
+	@Override
+	public String toString() {
+		return "User [username=" + username + ", password=" + password + ", fullname=" + fullname + ", enabled="
+				+ enabled + "]";
 	}
 
 	

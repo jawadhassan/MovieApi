@@ -41,10 +41,11 @@ import com.movieapidemo.service.KeyWordService;
 import com.movieapidemo.service.MovieDetailService;
 import com.movieapidemo.service.MovieReviewService;
 import com.movieapidemo.service.MovieService;
+import com.movieapidemo.service.UserService;
 import com.movieapidemo.util.JWTUtil;
 
 @RestController
-@RequestMapping("/movie")
+//@RequestMapping("/movie")
 public class MovieRestController {
 
 	@Autowired
@@ -63,9 +64,18 @@ public class MovieRestController {
 	ApiUserDetailService apiUserDetailService;
 	
 	@Autowired
-	PasswordEncoder passwordEncoder;
+	AuthenticationManager authenticationManager;
+	
+	
+	@Autowired
+	JWTUtil jwtUtil;
+	
+	@Autowired
+	UserService userService;
 
 	/* Movie URLs */
+	
+	
 
 	@PostMapping("/save")
 	public ResponseEntity<Movie> saveMovie(@Valid @RequestBody Movie movie) {
@@ -251,7 +261,51 @@ public class MovieRestController {
 	}
 
 	// Authentication Code
+	
+	
+	@PostMapping("/authenticate")
+	public ResponseEntity<?> authenticate(@RequestBody AuthenticateRequest authenticateRequest) throws Exception{
+		System.out.println("OK");
+		try {
+			
+			authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
+					authenticateRequest.getUsername(), authenticateRequest.getPassword()));
+			
+		}catch(BadCredentialsException ex) {
+			throw new Exception("Incorrect username or Password" + ex); 
+		}
+		final UserDetails userDetails = apiUserDetailService.loadUserByUsername(authenticateRequest.getUsername());
 
+		final String jwt = jwtUtil.generateToken(userDetails);
+		
+		return ResponseEntity.ok(new AuthenticateResponse(jwt));	
+		}
+	
+	@PostMapping("/create_user/")
+	public void createUser(@RequestBody User user) throws Exception{
+	  userService.save(user);
+	 
+	}
+
+//	@PostMapping("/check")
+//	public ResponseEntity<?> createAuthenticationToken(@RequestBody AuthenticateRequest authenticationRequest)
+//			throws Exception {
+//		try {
+//			
+//			authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
+//					authenticationRequest.getUsername(), authenticationRequest.getPassword()));
+//			
+//		}catch(BadCredentialsException ex) {
+//			throw new Exception("Incorrect username or Password" + ex); 
+//		}
+//		
+//		final UserDetails userDetails = apiUserDetailService.loadUserByUsername(authenticationRequest.getUsername());
+//
+//		final String jwt = jwtUtil.generateToken(userDetails);
+//		
+//		return ResponseEntity.ok(new AuthenticateResponse(jwt));
+//	}
+	
 //	@PostMapping("/authenticate")
 //	public ResponseEntity<?> createAuthenticationToken(@RequestBody AuthenticateRequest authenticationRequest)
 //			throws Exception {

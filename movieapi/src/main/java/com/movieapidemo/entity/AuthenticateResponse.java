@@ -1,7 +1,14 @@
 package com.movieapidemo.entity;
 
-public class AuthenticateResponse {
+import java.io.Serializable;
 
+
+public class AuthenticateResponse implements Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 3695631096932318815L;
 	private String jwt;
 
 	public AuthenticateResponse(String jwt) {

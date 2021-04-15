@@ -1,7 +1,13 @@
 package com.movieapidemo.entity;
 
-public class ApiResponse {
+import java.io.Serializable;
 
+public class ApiResponse implements Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -2962902841029869460L;
 	private int status;
 	private String message;
 	private long timeStamp;
