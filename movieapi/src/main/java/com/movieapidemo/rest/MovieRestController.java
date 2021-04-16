@@ -2,102 +2,60 @@ package com.movieapidemo.rest;
 
 import java.time.Duration;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.validation.Valid;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.movieapidemo.data.MovieRepository;
 import com.movieapidemo.entity.ApiResponse;
-import com.movieapidemo.entity.AuthenticateRequest;
-import com.movieapidemo.entity.AuthenticateResponse;
 import com.movieapidemo.entity.KeyWord;
 import com.movieapidemo.entity.Movie;
 import com.movieapidemo.entity.MovieDetail;
 import com.movieapidemo.entity.MovieReview;
-import com.movieapidemo.entity.User;
-import com.movieapidemo.exceptions.MovieNotFoundException;
 import com.movieapidemo.exceptions.RatingException;
-import com.movieapidemo.service.ApiUserDetailService;
-import com.movieapidemo.service.KeyWordService;
-import com.movieapidemo.service.MovieDetailService;
-import com.movieapidemo.service.MovieReviewService;
-import com.movieapidemo.service.MovieService;
-import com.movieapidemo.service.UserService;
-import com.movieapidemo.util.JWTUtil;
 
 @RestController
-//@RequestMapping("/movie")
 public class MovieRestController {
-
-	@Autowired
-	MovieService movieService;
-
-	@Autowired
-	MovieDetailService movieDetailService;
-
-	@Autowired
-	KeyWordService keyWordService;
-
-	@Autowired
-	MovieReviewService movieReviewService;
-
-	@Autowired
-	ApiUserDetailService apiUserDetailService;
 	
 	@Autowired
-	AuthenticationManager authenticationManager;
-	
-	
-	@Autowired
-	JWTUtil jwtUtil;
-	
-	@Autowired
-	UserService userService;
+	MovieRepository movieRepo;
 
 	/* Movie URLs */
-	
-	
 
 	@PostMapping("/save")
-	public ResponseEntity<Movie> saveMovie(@Valid @RequestBody Movie movie) {
+	public ResponseEntity<Movie> saveMovie(@RequestBody Movie movie) {
 
-		movie.setId(0);
+		movie.setId(Long.valueOf(0));
 
-		movieService.saveMovie(movie);
+//		movieService.saveMovie(movie);
 
 		return new ResponseEntity<Movie>(movie, HttpStatus.OK);
 
 	}
 
 	@PutMapping("/update/{movie_id}")
-	public ResponseEntity<Movie> update(@Valid @RequestBody Movie movie, @PathVariable int movie_id) {
+	public ResponseEntity<Movie> update(@RequestBody Movie movie, @PathVariable int movie_id) {
 		// TODO:change it to saveorUpdate
 		// TODO:check if there is no movie already will it update?
 
-		if (movie_id < 0 || (movieService.getMovie(movie_id) == null)) {
-			throw new MovieNotFoundException("Movie not found exception:" + movie_id);
-		}
+//		if (movie_id < 0 || (movieService.getMovie(movie_id) == null)) {
+//			throw new MovieNotFoundException("Movie not found exception:" + movie_id);
+//		}
 
-		movieService.saveMovie(movie);
+//		movieService.saveMovie(movie);
 
 		return new ResponseEntity<Movie>(movie, HttpStatus.OK);
 
@@ -106,11 +64,11 @@ public class MovieRestController {
 	@DeleteMapping("/delete/{movie_id}")
 	public ResponseEntity<ApiResponse> delete(@PathVariable int movie_id) {
 
-		if (movie_id < 0 || (movieService.getMovie(movie_id) == null)) {
-			throw new MovieNotFoundException("Movie not found exception:" + movie_id);
-		}
-
-		movieService.deleteMovie(movie_id);
+//		if (movie_id < 0 || (movieService.getMovie(movie_id) == null)) {
+//			throw new MovieNotFoundException("Movie not found exception:" + movie_id);
+//		}
+//
+//		movieService.deleteMovie(movie_id);
 
 		ApiResponse apiResponse = new ApiResponse();
 
@@ -125,7 +83,7 @@ public class MovieRestController {
 	/* Movie Detail URLs */
 
 	@PostMapping("/save_movie_detail/{movie_id}")
-	public ResponseEntity<ApiResponse> saveMovieDetail(@Valid @RequestBody MovieDetail movieDetail,
+	public ResponseEntity<ApiResponse> saveMovieDetail(@RequestBody MovieDetail movieDetail,
 			@PathVariable int movie_id) {
 
 		// TODO:save movie detail only when movie detail is not present
@@ -133,7 +91,7 @@ public class MovieRestController {
 //			throw new MovieNotFoundException("Movie not found exception:" + movie_id);
 //		}
 
-		movieDetailService.saveMovieDetail(movieDetail, movie_id);
+//		movieDetailService.saveMovieDetail(movieDetail, movie_id);
 
 		ApiResponse apiResponse = new ApiResponse();
 
@@ -148,25 +106,28 @@ public class MovieRestController {
 	@GetMapping("/{movie_id}")
 	public MovieDetail getMovieDetail(@PathVariable int movie_id) {
 
-		if (movie_id < 0 || (movieService.getMovie(movie_id) == null)) {
-			throw new MovieNotFoundException("Movie not found exception:" + movie_id);
-		}
-
-		return movieDetailService.getMovieDetail(movie_id);
+//		if (movie_id < 0 || (movieService.getMovie(movie_id) == null)) {
+//			throw new MovieNotFoundException("Movie not found exception:" + movie_id);
+//		}
+//
+//		return movieDetailService.getMovieDetail(movie_id);
+		
+		return null;
 	}
 
 	/* Movie Review URLs */
 
 	@PostMapping("/save_review/{movie_id}")
 	public ResponseEntity<ApiResponse> saveMovieReview(@PathVariable int movie_id,
-			@Valid @RequestBody MovieReview movieReview) {
+			@RequestBody MovieReview movieReview) {
 
-		if (movie_id < 0 || (movieService.getMovie(movie_id) == null)) {
-			throw new MovieNotFoundException("Movie not found exception:" + movie_id);
-		}
+//		if (movie_id < 0 || (movieService.getMovie(movie_id) == null)) {
+//			throw new MovieNotFoundException("Movie not found exception:" + movie_id);
+//		}
 
-		movieReviewService.saveMovieReview(movieReview, movie_id);
-
+		/*
+		 * movieReviewService.saveMovieReview(movieReview, movie_id);
+		 */
 		ApiResponse apiResponse = new ApiResponse();
 
 		apiResponse.setMessage("Movie Review with Movie ID: " + movie_id + " has been been added");
@@ -180,13 +141,13 @@ public class MovieRestController {
 	@GetMapping("/reviews/{movie_id}")
 	public List<MovieReview> getReviews(@PathVariable int movie_id) {
 
-		if (movie_id < 0 || (movieService.getMovie(movie_id) == null)) {
-			throw new MovieNotFoundException("Movie not found exception:" + movie_id);
-		}
+//		if (movie_id < 0 || (movieService.getMovie(movie_id) == null)) {
+//			throw new MovieNotFoundException("Movie not found exception:" + movie_id);
+//		}
 
-		List<MovieReview> reviews = movieReviewService.getReviews(movie_id);
+//		List<MovieReview> reviews = movieReviewService.getReviews(movie_id);
 
-		return reviews;
+		return null;
 	}
 
 	/* Movie Keywords URLs */
@@ -195,22 +156,22 @@ public class MovieRestController {
 	public List<KeyWord> getKeyWords(@PathVariable int movie_id) {
 		// TODO:check if it should be part of keyWord service
 
-		if (movie_id < 0 || (movieService.getMovie(movie_id) == null)) {
-			throw new MovieNotFoundException("Movie not found exception:" + movie_id);
-		}
+//		if (movie_id < 0 || (movieService.getMovie(movie_id) == null)) {
+//			throw new MovieNotFoundException("Movie not found exception:" + movie_id);
+//		}
 
-		return movieService.getTags(movie_id);
+//		return movieService.getTags(movie_id);
+		return null;
 	}
 
 	@PostMapping("save_movie_keywords/{movie_id}")
-	public ResponseEntity<ApiResponse> saveMovieKeyWord(@Valid @RequestBody KeyWord keyWord,
-			@PathVariable int movie_id) {
+	public ResponseEntity<ApiResponse> saveMovieKeyWord(@RequestBody KeyWord keyWord, @PathVariable int movie_id) {
 
-		if (movie_id < 0 || (movieService.getMovie(movie_id) == null)) {
-			throw new MovieNotFoundException("Movie not found exception:" + movie_id);
-		}
+//		if (movie_id < 0 || (movieService.getMovie(movie_id) == null)) {
+//			throw new MovieNotFoundException("Movie not found exception:" + movie_id);
+//		}
 
-		keyWordService.saveKeyWord(keyWord, movie_id);
+//		keyWordService.saveKeyWord(keyWord, movie_id);
 
 		ApiResponse apiResponse = new ApiResponse();
 
@@ -227,20 +188,22 @@ public class MovieRestController {
 	@PostMapping("/rating/{movie_id}")
 	public void saveRating(@PathVariable int movie_id, @RequestBody int value) {
 
-		if (movie_id < 0 || (movieService.getMovie(movie_id) == null)) {
-			throw new MovieNotFoundException("Movie not found exception:" + movie_id);
-		}
+//		if (movie_id < 0 || (movieService.getMovie(movie_id) == null)) {
+//			throw new MovieNotFoundException("Movie not found exception:" + movie_id);
+//		}
 
 		if (value < 0 || value > 5) {
 			throw new RatingException("Invalid value, value out of range" + value);
 		}
 
-		movieDetailService.rateMovie(movie_id, value);
+//		movieDetailService.rateMovie(movie_id, value);
+	
 	}
 
 	@GetMapping("/latest")
 	public Movie getLatest() {
-		return movieService.getLatest();
+//		return movieService.getLatest();
+		return null;
 	}
 
 	@GetMapping("/recommendations/{movie_id}")
@@ -260,79 +223,20 @@ public class MovieRestController {
 
 	}
 
-	// Authentication Code
-	
-	
-	@PostMapping("/authenticate")
-	public ResponseEntity<?> authenticate(@RequestBody AuthenticateRequest authenticateRequest) throws Exception{
-		System.out.println("OK");
-		try {
-			
-			authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-					authenticateRequest.getUsername(), authenticateRequest.getPassword()));
-			
-		}catch(BadCredentialsException ex) {
-			throw new Exception("Incorrect username or Password" + ex); 
-		}
-		final UserDetails userDetails = apiUserDetailService.loadUserByUsername(authenticateRequest.getUsername());
 
-		final String jwt = jwtUtil.generateToken(userDetails);
+	@GetMapping("/all")
+	public List<Movie> getAll() {
+
+		ArrayList<Movie> movies = new ArrayList<Movie>();
 		
-		return ResponseEntity.ok(new AuthenticateResponse(jwt));	
-		}
-	
-	@PostMapping("/create_user/")
-	public void createUser(@RequestBody User user) throws Exception{
-	  userService.save(user);
-	 
+		 movieRepo.findAll().forEach(x -> {
+			 movies.add(x);
+		 });
+		 
+		 return movies;
+
 	}
-
-//	@PostMapping("/check")
-//	public ResponseEntity<?> createAuthenticationToken(@RequestBody AuthenticateRequest authenticationRequest)
-//			throws Exception {
-//		try {
-//			
-//			authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-//					authenticationRequest.getUsername(), authenticationRequest.getPassword()));
-//			
-//		}catch(BadCredentialsException ex) {
-//			throw new Exception("Incorrect username or Password" + ex); 
-//		}
-//		
-//		final UserDetails userDetails = apiUserDetailService.loadUserByUsername(authenticationRequest.getUsername());
-//
-//		final String jwt = jwtUtil.generateToken(userDetails);
-//		
-//		return ResponseEntity.ok(new AuthenticateResponse(jwt));
-//	}
 	
-//	@PostMapping("/authenticate")
-//	public ResponseEntity<?> createAuthenticationToken(@RequestBody AuthenticateRequest authenticationRequest)
-//			throws Exception {
-//
-//		try {
-//			authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-//					authenticationRequest.getUsername(), authenticationRequest.getPassword()));
-//
-//		} catch (BadCredentialsException ex) {
-//			throw new Exception("Incorrect username or Password" + ex);
-//		}
-//
-//		final UserDetails userDetails = apiUserDetailService.loadUserByUsername(authenticationRequest.getUsername());
-//
-//		final String jwt = jwtUtil.generateToken(userDetails);
-//
-//		return ResponseEntity.ok(new AuthenticateResponse(jwt));
-//	}
-//
-//	@PostMapping
-//	public ResponseEntity<?> saveUser(@RequestBody User user) throws Exception {
-//
-//		apiUserDetailService.save(user);
-//
-//		return ResponseEntity.ok("User saved");
-//	}
-
 	@GetMapping("/print_json_sample")
 	public Movie JsonSample() {
 
@@ -342,7 +246,7 @@ public class MovieRestController {
 
 		KeyWord keyWord = new KeyWord();
 
-		movie.setId(0);
+		movie.setId(Long.valueOf(0));
 
 		movie.setReleaseDate(new Date());
 

@@ -14,9 +14,6 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
-import org.hibernate.validator.constraints.Length;
-import org.hibernate.validator.constraints.NotBlank;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
@@ -29,8 +26,8 @@ public class KeyWord {
 	private int id;
 
 	@Column(name = "keyword_title")
-	@NotBlank(message = "KeyWord Title cannot be empty")
-	@Length(max = 50, message = "The field must be less than 50 characters")
+//	@NotBlank(message = "KeyWord Title cannot be empty")
+//	@Length(max = 50, message = "The field must be less than 50 characters")
 	private String keywordTitle;
 
 	@JsonIgnore
