@@ -33,8 +33,26 @@ public class MovieRestController {
 	@Autowired
 	MovieRepository movieRepo;
 
+	
+	
+	///////////////////////////////////////
+	
+	
+	// Discover --> page, results, total results, total pages /== /discover/movie
+	// Movie Detail -->  object /== movie/{movie id}/
+	// Keywords --> id, keywords /== /movie/{movie_id}/keywords
+	// Reviews --> id, results, total results, total pages /== movie/{movie_id}/reviews
+	// Rate --> object status code, message /== /movie/{movie_id}/rating
+	// Delete Rating --> object status code, message  /== /movie/{movie_id}/rating
+	// Get latest --> object /== /movie/latest
+	// Get Top Rated --> object /== /movie/top_rated
+	
+	//////////////////////////////////////
+	
+	
 	/* Movie URLs */
 
+	
 	@PostMapping("/save")
 	public ResponseEntity<Movie> saveMovie(@RequestBody Movie movie) {
 
