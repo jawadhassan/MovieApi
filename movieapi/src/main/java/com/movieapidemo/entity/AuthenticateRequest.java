@@ -1,6 +1,13 @@
 package com.movieapidemo.entity;
 
-public class AuthenticateRequest {
+import java.io.Serializable;
+
+public class AuthenticateRequest implements Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 5718819575958526554L;
 
 	private String username;
 

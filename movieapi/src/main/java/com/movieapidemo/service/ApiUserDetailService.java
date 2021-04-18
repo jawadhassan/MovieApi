@@ -8,6 +8,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.movieapidemo.dao.UserDao;
 import com.movieapidemo.entity.User;
@@ -24,7 +25,7 @@ public class ApiUserDetailService implements UserDetailsService {
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
-		User user = userDao.getUser(username);
+		User user = userDao.findUserByName(username);
 
 		if (user == null) {
 			throw new UsernameNotFoundException("User not found with name:" + username);
@@ -36,14 +37,18 @@ public class ApiUserDetailService implements UserDetailsService {
 				new ArrayList<>());
 	}
 
-	public void save(User user) {
-
-		user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
-
-		User newUser = user;
-
-		userDao.saveUser(newUser);
-
-	}
+	
+//	@Transactional
+//	public void save(User user) {
+//
+//		user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
+//
+//		User newUser = user;
+//
+//		userDao.saveUser(newUser);
+//
+//	}
+	
+	
 
 }

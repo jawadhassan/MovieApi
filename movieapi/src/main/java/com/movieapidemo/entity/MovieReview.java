@@ -14,7 +14,6 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-import org.hibernate.validator.constraints.Length;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -29,12 +28,12 @@ public class MovieReview {
 
 	@Column(name = "author")
 //	@NotBlank(message="Value cannot be empty")
-	@Length(max = 50, message = "The field must be less than 50 characters")
+//	@Length(max = 50, message = "The field must be less than 50 characters")
 	private String author;
 
 	@Column(name = "content")
 //	@NotBlank(message="Value cannot be empty")
-	@Length(max = 300, message = "The field must be less than 300 characters")
+//	@Length(max = 300, message = "The field must be less than 300 characters")
 	private String content;
 
 	@Column(name = "url")
