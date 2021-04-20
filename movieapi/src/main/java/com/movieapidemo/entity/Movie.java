@@ -56,7 +56,7 @@ public class Movie {
 	@ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH,
 			CascadeType.REFRESH })
 	@JoinTable(name = "MOVIE_KEYWORD", joinColumns = @JoinColumn(name = "movie_id"), inverseJoinColumns = @JoinColumn(name = "keyword_id"))
-	private Set<KeyWord> keyWords;
+	private List<KeyWord> keyWords;
 
 	@JsonIgnoreProperties("movie")
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "movie", cascade = { CascadeType.ALL })
@@ -113,17 +113,19 @@ public class Movie {
 		this.movieDetail = movieDetail;
 	}
 
-	public Set<KeyWord> getkeyWords() {
+	
+
+	public List<KeyWord> getKeyWords() {
 		return keyWords;
 	}
 
-	public void setKeyWords(Set<KeyWord> keyWords) {
+	public void setKeyWords(List<KeyWord> keyWords) {
 		this.keyWords = keyWords;
 	}
 
 	public void addkeyWord(KeyWord keyWord) {
 		if (keyWords == null) {
-			keyWords = new HashSet<KeyWord>();
+			keyWords = new ArrayList<KeyWord>();
 		}
 
 		keyWords.add(keyWord);

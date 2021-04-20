@@ -1,5 +1,6 @@
 package com.movieapidemo.entity;
 
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -34,7 +35,7 @@ public class KeyWord {
 	@ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH,
 			CascadeType.REFRESH })
 	@JoinTable(name = "MOVIE_KEYWORD", joinColumns = @JoinColumn(name = "keyword_id"), inverseJoinColumns = @JoinColumn(name = "movie_id"))
-	private Set<Movie> movies;
+	private List<Movie> movies;
 
 	public int getId() {
 		return id;
@@ -52,11 +53,12 @@ public class KeyWord {
 		this.keywordTitle = tagTitle;
 	}
 
-	public Set<Movie> getMovies() {
+
+	public List<Movie> getMovies() {
 		return movies;
 	}
 
-	public void setMovies(Set<Movie> movies) {
+	public void setMovies(List<Movie> movies) {
 		this.movies = movies;
 	}
 
