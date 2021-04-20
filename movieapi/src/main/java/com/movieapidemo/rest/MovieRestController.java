@@ -6,9 +6,12 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -19,12 +22,15 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.movieapidemo.data.KeyWordRepository;
+import com.movieapidemo.data.MovieDetailRepository;
 import com.movieapidemo.data.MovieRepository;
 import com.movieapidemo.entity.ApiResponse;
 import com.movieapidemo.entity.KeyWord;
 import com.movieapidemo.entity.Movie;
 import com.movieapidemo.entity.MovieDetail;
 import com.movieapidemo.entity.MovieReview;
+import com.movieapidemo.exceptions.MovieNotFoundException;
 import com.movieapidemo.exceptions.RatingException;
 
 @RestController
@@ -33,6 +39,11 @@ public class MovieRestController {
 	@Autowired
 	MovieRepository movieRepo;
 
+	@Autowired
+	MovieDetailRepository movieDetailRepo;
+	
+	@Autowired
+	KeyWordRepository keyWordRepo;
 	
 	
 	///////////////////////////////////////
@@ -50,7 +61,119 @@ public class MovieRestController {
 	//////////////////////////////////////
 	
 	
-	/* Movie URLs */
+	
+	/**
+	 * Fetch Movie Details
+	 * @param movieId
+	 * @return ResponseEntity
+	 */
+	@GetMapping("/movie/{movieId}")
+	public ResponseEntity<?> getMovieDetail(@PathVariable Long movieId) {
+		  Optional<MovieDetail> result =  movieDetailRepo.findById(movieId);
+		  if(result.isPresent()) {
+			  return new ResponseEntity<MovieDetail>(result.get(), HttpStatus.OK);
+		  }else {
+			  return new ResponseEntity<>(new MovieNotFoundException("Movie not found exception:" + movieId),HttpStatus.NOT_FOUND);
+		  }
+	}
+	
+	/**
+	 * Fetch Keywords for the Movie
+	 * @param movieId
+	 * @return ResponseEntity
+	 */
+	@GetMapping("/movie/{movieId}/keywords")
+	public ResponseEntity<?> getKeyWords(@PathVariable Long movieId) {
+
+		Optional<Movie> result =  movieRepo.findById(movieId);
+		
+		if(result.isPresent()) {
+			Movie movie = result.get();
+			
+			if(movie.getKeyWords() != null) {
+				
+				return new ResponseEntity<List<KeyWord>>(movie.getKeyWords(),HttpStatus.OK);
+			}else {
+				return new ResponseEntity<>(new MovieNotFoundException("Movie not found exception:" + movieId),HttpStatus.NOT_FOUND);
+			}
+			
+		}else {
+			return new ResponseEntity<>(new MovieNotFoundException("Movie not found exception:" + movieId),HttpStatus.NOT_FOUND);
+		}
+	}
+	
+	
+	
+	/**
+	 * Fetch Movie Review of the Movie
+	 * @param movieId
+	 * @return ResponseEntity
+	 */
+	@GetMapping("/reviews/{movieId}/reviews")
+	public ResponseEntity<?> getReviews(@PathVariable Long movieId) {
+
+		Optional<Movie> result =  movieRepo.findById(movieId);
+		
+		if(result.isPresent()) {
+			Movie movie = result.get();
+			
+			if(movie.getMovieReviews() != null) {
+				return new ResponseEntity<List<MovieReview>>(movie.getMovieReviews(),HttpStatus.OK);
+			}else {
+				return new ResponseEntity<>(new MovieNotFoundException("Movie not found exception:" + movieId),HttpStatus.NOT_FOUND);
+			}
+		}else {
+			return new ResponseEntity<>(new MovieNotFoundException("Movie not found exception:" + movieId),HttpStatus.NOT_FOUND);
+		}
+	}
+	
+	/**
+	 * Discover Movies List (Pagination is Optional)
+	 * @param pageNumber (Optional)
+	 * @return ResponseEntity
+	 */
+	@GetMapping(value = {"/movie/{discover}", "/movie/{discover}/{pageNumber}"})
+	public ResponseEntity<?> discoverMovies(@PathVariable Optional<Integer> pageNumber){
+		
+		ArrayList<Movie> movieList = new ArrayList<Movie>();
+		
+		PageRequest page = null;
+		
+		if(pageNumber.isPresent()) {
+		
+			page = PageRequest.of(
+		            pageNumber.get(), 12, Sort.by("createdAt").descending());
+		    
+		}else {
+
+			page = PageRequest.of(
+		            0, 12, Sort.by("createdAt").descending());
+		}
+		
+		movieRepo.findAll(page).forEach(x -> {
+			movieList.add(x);
+		});
+		
+		
+		if(!movieList.isEmpty()) {
+			return new ResponseEntity<List<Movie>>(movieList,HttpStatus.OK);
+		}else {
+			return new ResponseEntity<>(new MovieNotFoundException("Movie not found exception:"),HttpStatus.NOT_FOUND);
+		}
+		
+		
+	}
+	
+	
+	@GetMapping("/top_rated")
+	public ResponseEntity<?> getTopRated() {
+
+		 
+		
+		return null;
+
+	}
+
 
 	
 	@PostMapping("/save")
@@ -121,17 +244,6 @@ public class MovieRestController {
 
 	}
 
-	@GetMapping("/{movie_id}")
-	public MovieDetail getMovieDetail(@PathVariable int movie_id) {
-
-//		if (movie_id < 0 || (movieService.getMovie(movie_id) == null)) {
-//			throw new MovieNotFoundException("Movie not found exception:" + movie_id);
-//		}
-//
-//		return movieDetailService.getMovieDetail(movie_id);
-		
-		return null;
-	}
 
 	/* Movie Review URLs */
 
@@ -156,31 +268,10 @@ public class MovieRestController {
 
 	}
 
-	@GetMapping("/reviews/{movie_id}")
-	public List<MovieReview> getReviews(@PathVariable int movie_id) {
 
-//		if (movie_id < 0 || (movieService.getMovie(movie_id) == null)) {
-//			throw new MovieNotFoundException("Movie not found exception:" + movie_id);
-//		}
-
-//		List<MovieReview> reviews = movieReviewService.getReviews(movie_id);
-
-		return null;
-	}
 
 	/* Movie Keywords URLs */
 
-	@GetMapping("/keywords/{movie_id}")
-	public List<KeyWord> getKeyWords(@PathVariable int movie_id) {
-		// TODO:check if it should be part of keyWord service
-
-//		if (movie_id < 0 || (movieService.getMovie(movie_id) == null)) {
-//			throw new MovieNotFoundException("Movie not found exception:" + movie_id);
-//		}
-
-//		return movieService.getTags(movie_id);
-		return null;
-	}
 
 	@PostMapping("save_movie_keywords/{movie_id}")
 	public ResponseEntity<ApiResponse> saveMovieKeyWord(@RequestBody KeyWord keyWord, @PathVariable int movie_id) {
@@ -234,12 +325,6 @@ public class MovieRestController {
 		return null;
 	}
 
-	@GetMapping("/top_rated")
-	public Movie getTopRated() {
-
-		return null;
-
-	}
 
 
 	@GetMapping("/all")

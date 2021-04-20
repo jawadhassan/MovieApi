@@ -50,7 +50,7 @@ public class MovieApiApplication {
 				
 				KeyWord keyWord = new KeyWord();
 				
-				Set<KeyWord> tagSet = new HashSet<KeyWord>();
+				List<KeyWord> tagSet = new ArrayList<KeyWord>();
 
 				keyWord.setKeywordTitle("Action");
 
