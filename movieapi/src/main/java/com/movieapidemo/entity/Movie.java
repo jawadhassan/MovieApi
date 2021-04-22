@@ -20,7 +20,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
@@ -48,17 +48,15 @@ public class Movie {
 	@Column(name = "movie_release_date")
 	private Date releaseDate;
 
-	@JsonIgnoreProperties("movie")
 	@OneToOne(mappedBy = "movie", cascade = CascadeType.ALL)
 	private MovieDetail movieDetail;
 
-	@JsonIgnoreProperties("movies")
 	@ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH,
 			CascadeType.REFRESH })
 	@JoinTable(name = "MOVIE_KEYWORD", joinColumns = @JoinColumn(name = "movie_id"), inverseJoinColumns = @JoinColumn(name = "keyword_id"))
 	private List<KeyWord> keyWords;
 
-	@JsonIgnoreProperties("movie")
+
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "movie", cascade = { CascadeType.ALL })
 	private List<MovieReview> movieReviews;
 

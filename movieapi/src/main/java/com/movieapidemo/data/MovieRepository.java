@@ -1,12 +1,13 @@
 package com.movieapidemo.data;
 
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.repository.PagingAndSortingRepository;
 
 import com.movieapidemo.entity.Movie;
 
-public interface MovieRepository extends CrudRepository<Movie, Long> {
+public interface MovieRepository extends PagingAndSortingRepository<Movie, Long> {
 
-	Iterable<Movie> findAll(PageRequest pageRequest);
+	Page<Movie> findAll(Pageable pageable);
 	
 }

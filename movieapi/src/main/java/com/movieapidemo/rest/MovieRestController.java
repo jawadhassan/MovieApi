@@ -11,6 +11,7 @@ import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -137,20 +138,20 @@ public class MovieRestController {
 		
 		ArrayList<Movie> movieList = new ArrayList<Movie>();
 		
-		PageRequest page = null;
+		Pageable pageRequest = null;
 		
 		if(pageNumber.isPresent()) {
 		
-			page = PageRequest.of(
-		            pageNumber.get(), 12, Sort.by("createdAt").descending());
+			pageRequest = PageRequest.of(
+		            pageNumber.get(), 12);
 		    
 		}else {
 
-			page = PageRequest.of(
-		            0, 12, Sort.by("createdAt").descending());
+			pageRequest = PageRequest.of(
+		            0, 12);
 		}
 		
-		movieRepo.findAll(page).forEach(x -> {
+		movieRepo.findAll(pageRequest).forEach(x -> {
 			movieList.add(x);
 		});
 		
